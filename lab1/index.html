@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <head>
     <script>
-        function init() {
-            var c = document.getElementById("cns");
-            var ctx = c.getContext("2d");
+        function draw(canvas, color) {
+            ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.beginPath();
             ctx.arc(100, 75, 50, 0, 2 * Math.PI);
-            ctx.fillStyle = 'green';
+            ctx.fillStyle = color;
             ctx.fill();
-            ctx.stroke(); 
+            ctx.stroke();
+        }
+        function draw_green(canvas) {
+            draw(canvas, "green");
+            setTimeout(draw_blue, 1);
+        }
+        function draw_blue(canvas) {
+            draw(canvas, "blue");
+            setTimeout(draw_green, 1);
         }
     </script>
 </head>
 <body>
     <canvas id="cns" width="800px" height="600px"></canvas>
     <script>
-        init();
+        var c = document.getElementById("cns");
+        draw_green(c);
     </script>
 </body>
