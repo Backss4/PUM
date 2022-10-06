@@ -1,1 +1,20 @@
-Test
+<!DOCTYPE html>
+<head>
+    <script>
+        function init() {
+            var c = document.getElementById("cns");
+            var ctx = c.getContext("2d");
+            ctx.beginPath();
+            ctx.arc(100, 75, 50, 0, 2 * Math.PI);
+            ctx.fillStyle = 'green';
+            ctx.fill();
+            ctx.stroke(); 
+        }
+    </script>
+</head>
+<body>
+    <canvas id="cns" width="800px" height="600px"></canvas>
+    <script>
+        init();
+    </script>
+</body>
