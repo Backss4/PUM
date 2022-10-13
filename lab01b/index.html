@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+    <script>
+        function draw(canvas, color) {
+            ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(100, 75, 50, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.stroke();
+        }
+        function draw_green(canvas) {
+            draw(canvas, "green");
+            setTimeout(draw_blue, 1000, canvas);
+        }
+        function draw_blue(canvas) {
+            draw(canvas, "blue");
+            setTimeout(draw_green, 1000, canvas);
+        }
+    </script>
+</head>
+<body>
+    <canvas id="cns1" width="800px" height="600px"></canvas><br>
+    <canvas id="cns2" width="800px" height="600px"></canvas><br>
+    <canvas id="cns3" width="800px" height="600px"></canvas>
+    <script>
+        var c1 = document.getElementById("cns1");
+        draw_green(c1);
+    </script>
+</body>
