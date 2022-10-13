@@ -32,7 +32,6 @@
         var c2 = document.getElementById("cns2");
         var current = 255;
         var direction = 0
-        //g, 0, 255-g
         function draw2() {
             ctx = c2.getContext("2d");
             ctx.clearRect(0, 0, c2.width, c2.height);
@@ -55,5 +54,48 @@
             window.requestAnimationFrame(draw2);
         }
         draw2();
+    </script>
+    <script>
+        var c3 = document.getElementById("cns3");
+        var current_g_value = 255;
+        var color_direction = 0;
+        var bounce_direction = 0;
+        const initial_y = Math.floor(c3.height / 2);
+        const radius = 50;
+        var y = initial_y - radius;
+
+        function draw3() {
+            ctx = c3.getContext("2d");
+            ctx.clearRect(0, 0, c3.width, c3.height);
+            ctx.beginPath();
+            ctx.arc(100, y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = `rgb(0, ${current_g_value}, ${255 - current_g_value})`;
+            ctx.fill();
+            ctx.stroke();
+            if(current_g_value == 0 && color_direction == 0)
+                color_direction = 1;
+            
+            if(current_g_value == 255 && color_direction == 1)
+                color_direction = 0;
+
+            if(color_direction == 1)
+                current_g_value += 1;
+            else
+                current_g_value -= 1;
+
+            if(y > c3.height - radius)
+                bounce_direction = 0;
+            
+            if(y < initial_y - radius)
+                bounce_direction = 1;
+
+            if(bounce_direction == 0)
+                y -= 1;
+            else
+                y += 1;
+            
+            window.requestAnimationFrame(draw3);
+        }
+        draw3();
     </script>
 </body>
