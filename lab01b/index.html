@@ -28,4 +28,19 @@
         var c1 = document.getElementById("cns1");
         draw_green(c1);
     </script>
+    <script>
+        var c2 = document.getElementById("cns2");
+
+        function draw2() {
+            ctx = c2.getContext("2d");
+            ctx.clearRect(0, 0, c2.width, c2.height);
+            ctx.beginPath();
+            ctx.arc(100, 75, 50, 0, 2 * Math.PI);
+            //ctx.fillStyle = color;
+            ctx.fill();
+            ctx.stroke();
+            window.requestAnimationFrame(draw2);
+        }
+        draw2();
+    </script>
 </body>
