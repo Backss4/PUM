@@ -47,16 +47,6 @@
         }
         
         function animate(width, height) {
-            const redrawStairs = function() {
-                var x = 0;
-                var y = 100;
-                for(i = 0; i < 5; i++, x += width, y += 100) {
-                    ctx.beginPath();
-                    ctx.rect(x, y, width, height - y);
-                    ctx.stroke();
-                }
-            }
-
             if (ball.step < 6) {
                 ball.x += 1;
                  if(ball.x - ball.radius > ball.step * width) {
@@ -67,7 +57,11 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawFloor();
-            redrawStairs();
+            for(i = 0, x = 0, y = 100; i < 5; i++, x += width, y += 100) {
+                ctx.beginPath();
+                ctx.rect(x, y, width, height - y);
+                ctx.stroke();
+            }
             drawBall();
             if(ball.step < 6) {
                 window.requestAnimationFrame(function() {
