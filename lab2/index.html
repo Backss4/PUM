@@ -39,10 +39,15 @@
             setTimeout(drawStairsWithAnimation, 1000, x + width, y + 100, width, height - 100);
         }
 
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
         
 
         drawFloor();
         drawStairsWithAnimation(0, 100, 125, 700);
-        
+        drawBall();
     </script>
 </body>
