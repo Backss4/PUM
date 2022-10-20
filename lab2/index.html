@@ -2,12 +2,30 @@
 <head>
     <title>Lab2</title>
     <script>
+        class Circle {
+            constructor(radius, initial_x, initial_y) {
+                this.radius = radius;
+                this.x = initial_x;
+                this.y = initial_y
+            }
+        }
 
+        
     </script>
 </head>
 <body>
-    <canvas id="cns2" width="800px" height="600px"></canvas>
+    <canvas id="cns" width="800px" height="600px"></canvas>
     <script>
+        canvas = document.getElementById("cns");
+        ctx = canvas.getContext("2d");
 
+        function drawFloor() {
+            ctx.beginPath();
+            ctx.moveTo(0, 600);
+            ctx.lineTo(800, 600);
+            ctx.stroke();
+        }
+
+        drawFloor();
     </script>
 </body>
