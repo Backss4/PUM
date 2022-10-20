@@ -48,10 +48,13 @@
         
         function animate(width, height) {
             if (ball.step < 6) {
-                ball.x += 1;
-                 if(ball.x - ball.radius > ball.step * width) {
-                    ball.y += 100;
-                    ball.step += 1;
+                if(ball.x - ball.radius > ball.step * width) {
+                    if(ball.y == (100 * (ball.step + 1) - ball.radius))
+                        ball.step += 1;
+                    else
+                        ball.y += 1;
+                } else {
+                    ball.x += 1;
                 }
             }
 
