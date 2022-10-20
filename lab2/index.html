@@ -20,6 +20,7 @@
         canvas = document.getElementById("cns");
         ctx = canvas.getContext("2d");
         var ball = new Ball(50, 62, 100);
+        const WIDTH = 125;
 
         function drawFloor() {
             ctx.beginPath();
@@ -45,9 +46,41 @@
             ctx.stroke();
         }
         
+        function animate(width, height) {
+            const redrawStairs = function() {
+                var x = 0;
+                var y = 100;
+                for(i = 0; i < 5; i++, x += width, y += 100) {
+                    ctx.beginPath();
+                    ctx.rect(x, y, width, height - y);
+                    ctx.stroke();
+                }
+            }
+
+            if (ball.step < 6) {
+                ball.x += 1;
+                 if(ball.x - ball.radius > ball.step * width) {
+                    ball.y += 100;
+                    ball.step += 1;
+                }
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawFloor();
+            redrawStairs();
+            drawBall();
+            if(ball.step < 6) {
+                window.requestAnimationFrame(function() {
+                    animate(width, height);
+                });
+            }
+        }
 
         drawFloor();
-        drawStairsWithAnimation(0, 100, 125, 700);
+        drawStairsWithAnimation(0, 100, WIDTH, 700);
         drawBall();
+        setTimeout(window.requestAnimationFrame, 6000, function() {
+            animate(WIDTH, 700);
+        });
     </script>
 </body>
