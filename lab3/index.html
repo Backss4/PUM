@@ -55,8 +55,8 @@
         }
 
         function spawnEnemy() {
-            var x = Math.floor(Math.random() * (canvas.width - 80 + 1)) + 40;
-            var y = Math.floor(Math.random() * (canvas.height - 150 + 1)) + 50;
+            var x = Math.floor(Math.random() * (canvas.width - 40 + 1)) + 40;
+            var y = Math.floor(Math.random() * ((canvas.height - 50) - 50 + 1)) + 50;
             var enemy = new Ball(40, x, y);
             enemies.push(enemy);
         }
