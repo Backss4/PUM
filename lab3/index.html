@@ -4,6 +4,7 @@
     <script>
         canvas = document.getElementById("cns");
         ctx = canvas.getContext("2d");
+        window.addEventListener("keydown", processInput, false);
         class Player {
             constructor(initial_x, initial_y, width, height) {
                 this.x = initial_x - width / 2;
@@ -11,16 +12,74 @@
                 this.width = width;
                 this.height = height;
             }
+
+            getCenter() {
+                return this.x + this.width / 2;
+            }
+        }
+
+        class Ball {
+            constructor(radius, initial_x, initial_y) {
+                this.radius = radius;
+                this.x = initial_x;
+                this.y = initial_y - radius;
+            }
         }
 
         var player = new Player(canvas.width / 2, canvas.height, 50, 25);
+        var bullets = []
+        var enemies = []
+
+        function processInput(event) {
+            const keyCode = event.keyCode;
+            if (keyCode == 65 || keyCode == 37)
+                player.x -= 5;
+            if (keyCode == 68 || keyCode == 39)
+                player.x += 5;
+            if (keyCode == 32)
+                spawnBullet();
+        }
 
         function drawPlayer() {
             ctx.beginPath();
             ctx.rect(player.x, player.y, player.width, player.height);
+            ctx.fillStyle = `rgb(0, 0, 0)`;
+            ctx.fill()
             ctx.stroke();
         }
-        drawPlayer();
+
+        function spawnBullet() {
+            var bullet = new Ball(15, player.getCenter(), player.y);
+            bullets.push(bullet);
+        }
+
+        function drawBullets() {
+            bullets.forEach(bullet => {
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, bullet.radius, 0, 2 * Math.PI);
+                ctx.fillStyle = `rgb(0, 255, 127)`;
+                ctx.fill();
+                ctx.stroke();
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            drawBullets();
+
+            for (var i = bullets.length; i--;) {
+                const bullet = bullets[i];
+                bullet.y -= 5;
+                if (bullet.y < 0) {
+                    bullets.splice(i, 1);
+                }
+            }
+
+            window.requestAnimationFrame(animate);
+        }
+
+        window.requestAnimationFrame(animate);
 
     </script>
 </body>
