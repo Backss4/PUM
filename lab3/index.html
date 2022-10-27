@@ -100,7 +100,7 @@
                 }
                 for(var j = enemies.length; j--;) {
                     const enemy = enemies[j];
-                    if(bullet.y - bullet.radius <= enemy.y + enemy.radius && enemy.x + enemy.radius >= bullet.x && enemy.x - enemy.radius <= bullet.x) {
+                    if(bullet.y - bullet.radius <= enemy.y + enemy.radius && enemy.x + enemy.radius >= bullet.x - bullet.radius && enemy.x - enemy.radius <= bullet.x + bullet.radius) {
                         bullets.splice(i, 1);
                         enemies.splice(j, 1);
                         score += 1;
