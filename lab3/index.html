@@ -27,8 +27,9 @@
         }
 
         var player = new Player(canvas.width / 2, canvas.height, 50, 25);
-        var bullets = []
-        var enemies = []
+        var bullets = [];
+        var enemies = [];
+        var score = 0;
 
         function processInput(event) {
             const keyCode = event.keyCode;
@@ -80,16 +81,30 @@
             });
         }
 
+        function drawScore() {
+            ctx.font = "10px Arial";
+            ctx.strokeText("Wynik: " + score.toString(), 10, 10);
+        }
+
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawPlayer();
             drawBullets();
             drawEnemies();
+            drawScore();
             for (var i = bullets.length; i--;) {
                 const bullet = bullets[i];
                 bullet.y -= 5;
                 if (bullet.y < 0) {
                     bullets.splice(i, 1);
+                }
+                for(var j = enemies.length; j--;) {
+                    const enemy = enemies[j];
+                    if(bullet.y - bullet.radius <= enemy.y + enemy.radius && enemy.x + enemy.radius >= bullet.x && enemy.x - enemy.radius <= bullet.x) {
+                        bullets.splice(i, 1);
+                        enemies.splice(j, 1);
+                        score += 1;
+                    }
                 }
             }
 
