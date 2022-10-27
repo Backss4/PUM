@@ -1,7 +1,26 @@
 <!DOCTYPE html>
 <body>
-    <canvas id="cns"></canvas>
+    <canvas id="cns" width="800px" height="600px"></canvas>
     <script>
+        canvas = document.getElementById("cns");
+        ctx = canvas.getContext("2d");
+        class Player {
+            constructor(initial_x, initial_y, width, height) {
+                this.x = initial_x - width / 2;
+                this.y = initial_y - height;
+                this.width = width;
+                this.height = height;
+            }
+        }
+
+        var player = new Player(canvas.width / 2, canvas.height, 50, 25);
+
         
+
     </script>
 </body>
+
+1. Proszę przygotować prostą grę, w której (u dołu ekranu) sterujemy(prawo-lewo) prostokątem. 
+Po naciśnięciu spacji strzelamy małymi kulkami, które niszczą (znikają) duże kółka pojawiające się u góry ekranu.
+2. Jeśli uda się Państwu zrealizować punkt 1 to proszę dodać "licznik"/"punktację". 
+Gdzieś na stronie ma znajdować liczba "zestrzelonych" kulek.
