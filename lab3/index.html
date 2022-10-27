@@ -53,6 +53,23 @@
             bullets.push(bullet);
         }
 
+        function spawnEnemy() {
+            var x = Math.floor(Math.random() * (canvas.width - 80 + 1)) + 40;
+            var y = Math.floor(Math.random() * (canvas.height - 150 + 1)) + 50;
+            var enemy = new Ball(40, x, y);
+            enemies.push(enemy);
+        }
+
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.radius, 0, 2 * Math.PI);
+                ctx.fillStyle = `rgb(255, 0, 0)`;
+                ctx.fill();
+                ctx.stroke();
+            });
+        }
+
         function drawBullets() {
             bullets.forEach(bullet => {
                 ctx.beginPath();
@@ -67,7 +84,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawPlayer();
             drawBullets();
-
+            drawEnemies();
             for (var i = bullets.length; i--;) {
                 const bullet = bullets[i];
                 bullet.y -= 5;
@@ -78,7 +95,7 @@
 
             window.requestAnimationFrame(animate);
         }
-
+        setInterval(spawnEnemy, 10000);
         window.requestAnimationFrame(animate);
 
     </script>
