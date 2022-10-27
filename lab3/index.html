@@ -15,12 +15,12 @@
 
         var player = new Player(canvas.width / 2, canvas.height, 50, 25);
 
-        
+        function drawPlayer() {
+            ctx.beginPath();
+            ctx.rect(player.x, player.y, player.width, player.height);
+            ctx.stroke();
+        }
+        drawPlayer();
 
     </script>
 </body>
-
-1. Proszę przygotować prostą grę, w której (u dołu ekranu) sterujemy(prawo-lewo) prostokątem. 
-Po naciśnięciu spacji strzelamy małymi kulkami, które niszczą (znikają) duże kółka pojawiające się u góry ekranu.
-2. Jeśli uda się Państwu zrealizować punkt 1 to proszę dodać "licznik"/"punktację". 
-Gdzieś na stronie ma znajdować liczba "zestrzelonych" kulek.
