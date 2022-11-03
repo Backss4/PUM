@@ -39,6 +39,25 @@
             }
         }
 
+        class Route {
+            constructor() {
+                this.x = 100;
+                this.width = canvas.width - 100;
+                this.whiteStripsY = 0;
+                this.whiteStripsWidth = 20;
+                this.whiteStripsHeight = 50;
+                this.redStrips
+            }
+
+            
+
+            draw() {
+                ctx.beginPath();
+                ctx.rect(this.x, 0, this.width, canvas.height);
+                ctx.fillStyle = `rgb(128, 128, 128)`;
+                ctx.fill();
+            }
+        }
 
         function drawGrass() {
             ctx.beginPath();
@@ -52,7 +71,9 @@
         ctx = canvas.getContext("2d");
 
         var player = new Player(canvas.width / 2, canvas.height - 150, 50, 100);
+        var route = new Route();
 
+        route.draw();
         player.draw();
         drawGrass();
     </script>
