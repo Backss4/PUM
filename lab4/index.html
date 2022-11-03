@@ -2,6 +2,35 @@
 <body>
     <canvas id="cns" width="800px" height="600px"></canvas>
     <script>
-        
+        class Player {
+            constructor(initial_x, initial_y, width, height) {
+                this.x = initial_x - width / 2;
+                this.y = initial_y - height;
+                this.width = width;
+                this.height = height;
+                this.speed = 20;
+            }
+
+            drawCar() {
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = `rgb(0, 128, 174)`;
+                ctx.fill();
+            }
+
+        }
+
+        canvas = document.getElementById("cns");
+        ctx = canvas.getContext("2d");
+
+        var player = new Player(canvas.width / 2, canvas.height - 150, 50, 100);
+
+        player.drawCar();
     </script>
 </body>
+
+1. Proszę przygotować animację, w której wyścigówka (prostokąt z kołami) jedzie na wprost po drodze. 
+Jako drogę proszę wykorzystać szary prostokąt (od góry do dołu) 
+z białą przerywaną linią (białe prostokąty) na środku oraz biało czerwonymi liniami po bokach, 
+które się przesuwają (symulując ruch). Sterowanie należy zrealizować za pomocą strzałek/kursorów.
+2. Proszę dodać pojawiające się przeszkody, które należy omijać
