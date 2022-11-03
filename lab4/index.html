@@ -39,12 +39,22 @@
             }
         }
 
+
+        function drawGrass() {
+            ctx.beginPath();
+            ctx.rect(0, 0, 100, canvas.height);
+            ctx.rect(canvas.width - 100, 0, 100, canvas.height);
+            ctx.fillStyle = `rgb(0, 255, 0)`;
+            ctx.fill();
+        }
+
         canvas = document.getElementById("cns");
         ctx = canvas.getContext("2d");
 
         var player = new Player(canvas.width / 2, canvas.height - 150, 50, 100);
 
         player.draw();
+        drawGrass();
     </script>
 </body>
 
