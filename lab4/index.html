@@ -43,19 +43,33 @@
             constructor() {
                 this.x = 100;
                 this.width = canvas.width - 100;
-                this.whiteStripsY = 0;
+                this.whiteStripsY = 50;
                 this.whiteStripsWidth = 20;
-                this.whiteStripsHeight = 50;
+                this.whiteStripsHeight = 60;
                 this.redStrips
             }
 
-            
+            drawWhiteStrips() {
+                for(var i = 1; i < 3; i++) {
+                    for(var j = 0; j < 3; j++) {
+                        ctx.beginPath();
+                        ctx.rect(this.x + 200 * i, this.whiteStripsY + 180 * j, this.whiteStripsWidth, this.whiteStripsHeight);
+                        ctx.fillStyle = `rgb(255, 255, 255)`;
+                        ctx.fill();
+                    }
+                }
+            }
 
-            draw() {
+            drawBackground() {
                 ctx.beginPath();
                 ctx.rect(this.x, 0, this.width, canvas.height);
                 ctx.fillStyle = `rgb(128, 128, 128)`;
                 ctx.fill();
+            }
+
+            draw() {
+                this.drawBackground();
+                this.drawWhiteStrips();
             }
         }
 
