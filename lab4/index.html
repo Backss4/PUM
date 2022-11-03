@@ -39,25 +39,47 @@
             }
         }
 
+        class Strip {
+            constructor(x, y, width, height) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = `rgb(255, 255, 255)`;
+                ctx.fill();
+            }
+        }
+
         class Route {
             constructor() {
                 this.x = 100;
-                this.width = canvas.width - 100;
-                this.whiteStripsY = 50;
+                this.width = canvas.width - this.x;
+                this.whiteStripsY = 20;
                 this.whiteStripsWidth = 20;
                 this.whiteStripsHeight = 60;
-                this.redStrips
+                this.whiteStrips = [];
+                this.generateInitialStrips();
+            }
+
+            generateInitialStrips() {
+                for(var i = 1; i < 3; i++) {
+                    for(var j = 0; j < 4; j++) {
+                        this.whiteStrips.push(new Strip(this.x + 200 * i, this.whiteStripsY + 150 * j, this.whiteStripsWidth, this.whiteStripsHeight));
+                    }
+                }
+            }
+
+            generateStrip(x) {
+                this.whiteStrips.push(new Strip(x, this.whiteStripsY + 150, this.whiteStripsWidth, this.whiteStripsHeight));
             }
 
             drawWhiteStrips() {
-                for(var i = 1; i < 3; i++) {
-                    for(var j = 0; j < 3; j++) {
-                        ctx.beginPath();
-                        ctx.rect(this.x + 200 * i, this.whiteStripsY + 180 * j, this.whiteStripsWidth, this.whiteStripsHeight);
-                        ctx.fillStyle = `rgb(255, 255, 255)`;
-                        ctx.fill();
-                    }
-                }
+                this.whiteStrips.forEach(strip => strip.draw());
             }
 
             drawBackground() {
@@ -87,9 +109,23 @@
         var player = new Player(canvas.width / 2, canvas.height - 150, 50, 100);
         var route = new Route();
 
-        route.draw();
-        player.draw();
-        drawGrass();
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (var i = route.whiteStrips.length; i--;) {
+                const strip = route.whiteStrips[i];
+                strip.y += player.speed;
+                if(strip.y > canvas.height) {
+                    route.whiteStrips.slice(i, 1);
+                    route.generateStrip(strip.x);
+                }
+            }
+            route.draw();
+            player.draw();
+            drawGrass();
+            window.requestAnimationFrame(animate);
+        }
+        window.requestAnimationFrame(animate);
     </script>
 </body>
 
