@@ -8,8 +8,8 @@
                 this.y = initial_y - height;
                 this.width = width;
                 this.height = height;
-                this.speed = 20;
-                this.maxSpeed = 50;
+                this.speed = 10;
+                this.maxSpeed = 40;
             }
 
             drawCar() {
@@ -199,10 +199,15 @@
 
         function processInput(event) {
             const keyCode = event.keyCode;
-            if ((keyCode == 65 || keyCode == 37) && player.x - 5 >= route.x)
-                player.x -= 8;
-            if ((keyCode == 68 || keyCode == 39) && player.x + player.width + 5 <= route.x + route.width)
-                player.x += 8;
+            if (keyCode == 37 && player.x - 10 >= route.x)
+                player.x -= 10;
+            if (keyCode == 39 && player.x + player.width + 10 <= route.x + route.width)
+                player.x += 10;
+            console.log(keyCode)
+            if(keyCode == 40 && player.y + player.height + 10 <= canvas.height)
+                player.y += 10;
+            if(keyCode == 38 && player.y - 10 >= 0)
+                player.y -= 10;
             // if (keyCode == 32)
             //     spawnBullet();
         }
