@@ -59,19 +59,26 @@
         }
 
         class EdgeStrip {
-            constructor(x, y, width, height, spacing) {
+            constructor(x, y, width, height, fillStyle, spacing) {
                 this.x = x;
                 this.y = y;
                 this.spacing = spacing;
                 this.width = width;
                 this.height = height;
+                this.fillStyle = fillStyle;
             }
 
             draw() {
                 ctx.beginPath();
                 ctx.rect(this.x, this.y, this.width, this.height);
-                ctx.rect(this.x + this.spacing, this.y, this.width, this.height);
-                ctx.fillStyle = `rgb(255, 255, 255)`;
+                ctx.rect(this.x + this.spacing - this.width, this.y, this.width, this.height);
+                console.log(this.fillStyle)
+                //console.log(this.fillStyle);
+                if(this.fillStyle == 1) {
+                    ctx.fillStyle = `rgb(255, 255, 255)`;
+                } else {
+                    ctx.fillStyle = `rgb(255, 0, 0)`;
+                }
                 ctx.fill();
             }
         }
@@ -79,11 +86,14 @@
         class Route {
             constructor() {
                 this.x = 100;
-                this.width = canvas.width - this.x;
+                this.width = canvas.width - (this.x * 2);
                 this.whiteStripsY = 20;
                 this.whiteStripsWidth = 20;
                 this.whiteStripsHeight = 60;
                 this.whiteStrips = [];
+                this.edgeStipsHeight = 50;
+                this.edgeStipsWidth = 20;
+                this.edgeStrips = [];
                 this.generateInitialStrips();
             }
 
@@ -91,10 +101,26 @@
                 for(var j = 0; j < 4; j++) {
                     this.whiteStrips.push(new Strip(this.x + 200, this.whiteStripsY + 150 * j, this.whiteStripsWidth, this.whiteStripsHeight, 200));
                 }
+
+                for(var i = 0; i < canvas.height / this.edgeStipsHeight; i++) {
+                    if(i % 2 == 0) {
+                        this.edgeStrips.push(new EdgeStrip(
+                            this.x, this.edgeStipsHeight * i, this.edgeStipsWidth, this.edgeStipsHeight, 1, this.width
+                        ));
+                    } else {
+                        this.edgeStrips.push(new EdgeStrip(
+                            this.x, this.edgeStipsHeight * i, this.edgeStipsWidth, this.edgeStipsHeight, 0, this.width
+                        ));
+                    }
+                }
             }
 
             generateStrip(x, y) {
                 this.whiteStrips.unshift(new Strip(x, y, this.whiteStripsWidth, this.whiteStripsHeight, 200));
+            }
+
+            generateStripEdge(y, fillStyle) {
+                this.edgeStrips.unshift(new EdgeStrip(this.x, y, this.edgeStipsWidth, this.edgeStipsHeight, fillStyle, this.width));
             }
 
             drawWhiteStrips() {
@@ -108,9 +134,14 @@
                 ctx.fill();
             }
 
+            drawEdgeStrips() {
+                this.edgeStrips.forEach(strip => strip.draw());
+            }
+
             draw() {
                 this.drawBackground();
                 this.drawWhiteStrips();
+                this.drawEdgeStrips();
             }
         }
 
@@ -131,17 +162,37 @@
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            const firstStrip = route.whiteStrips[0];
-            const lastStrip = route.whiteStrips[route.whiteStrips.length - 1];
-            if(lastStrip.y + route.whiteStripsHeight > canvas.height) {
-                route.whiteStrips.slice(route.whiteStrips.length, 1);
-                if(firstStrip.y > 100)
-                    route.generateStrip(firstStrip.x, -50);
+            const firstStripWhite = route.whiteStrips[0];
+            const lastStripWhite = route.whiteStrips[route.whiteStrips.length - 1];
+            if(lastStripWhite.y + route.whiteStripsHeight > canvas.height) {
+                if(lastStripWhite.y > canvas.height)
+                    route.whiteStrips.slice(route.whiteStrips.length - 1, 1);
+                if(firstStripWhite.y > 100)
+                    route.generateStrip(firstStripWhite.x, -50);
             }
             for (var i = route.whiteStrips.length; i--;) {
                 const strip = route.whiteStrips[i];
                 strip.y += player.speed;
             }
+
+            const firstStripEdge = route.edgeStrips[0];
+            const lastStripEdge = route.edgeStrips[route.edgeStrips.length - 1];
+            if(lastStripEdge.y + route.edgeStipsHeight > canvas.height) {
+                if(lastStripEdge.y > canvas.height)
+                    route.edgeStrips.slice(route.edgeStrips.length - 1, 1);
+                if(firstStripEdge.y >= 0) {
+                    if(firstStripEdge.fillStyle == 1) {
+                        route.generateStripEdge(-route.edgeStipsHeight, 0);    
+                    } else {
+                        route.generateStripEdge(-route.edgeStipsHeight, 1);
+                    }
+                }
+            }
+            for (var i = route.edgeStrips.length; i--;) {
+                const strip = route.edgeStrips[i];
+                strip.y += player.speed;
+            }
+
             route.draw();
             player.draw();
             drawGrass();
