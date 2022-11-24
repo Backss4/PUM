@@ -58,6 +58,24 @@
             }
         }
 
+        class EdgeStrip {
+            constructor(x, y, width, height, spacing) {
+                this.x = x;
+                this.y = y;
+                this.spacing = spacing;
+                this.width = width;
+                this.height = height;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.width, this.height);
+                ctx.rect(this.x + this.spacing, this.y, this.width, this.height);
+                ctx.fillStyle = `rgb(255, 255, 255)`;
+                ctx.fill();
+            }
+        }
+
         class Route {
             constructor() {
                 this.x = 100;
@@ -129,6 +147,17 @@
             drawGrass();
             window.requestAnimationFrame(animate);
         }
+
+        function processInput(event) {
+            const keyCode = event.keyCode;
+            if ((keyCode == 65 || keyCode == 37) && player.x - 5 >= route.x)
+                player.x -= 5;
+            if ((keyCode == 68 || keyCode == 39) && player.x + player.width + 5 <= route.width)
+                player.x += 5;
+            // if (keyCode == 32)
+            //     spawnBullet();
+        }
+        window.addEventListener("keydown", processInput, false);
         window.requestAnimationFrame(animate);
     </script>
 </body>
