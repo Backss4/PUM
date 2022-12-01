@@ -21,13 +21,16 @@
             static carStyle = `rgb(128, 74, 128)`;
             static routeFirstStripStyle = `rgb(255, 255, 255)`;
             static routeSecondStripStyle = `rgb(255, 0, 0)`;
+            static routeStripWidth = 50;
+            static routeWidth = canvas.width;
+            static routeHeight = 30;
 
         }
 
         class Car {
             constructor(initial_x, initial_y) {
                 this.x = initial_x - Config.carWidth / 2;
-                this.y = initial_y - Config.carHeight;
+                this.y = initial_y - Config.carHeight - 15;
                 this.speed = 10;
                 this.jump_impulse = Config.carJumpSpeed;
                 this.gravity = Config.carGravitySpeed;
@@ -46,15 +49,15 @@
                 ctx.beginPath();
                 ctx.rect(this.x + Config.carWidth - 10, this.y, 10, Config.carHeight / 2);
                 ctx.closePath();
-                ctx.fillStyle = `rgb (0, 74, 255)`;
-                //ctx.fill();
+                ctx.fillStyle = `rgb(0, 156, 255)`;
+                ctx.fill();
             }
 
             drawWheels() {
                 ctx.beginPath();
                 ctx.arc(this.x + 10, this.y + Config.carHeight + 5, 20, 0, 2 * Math.PI);
                 ctx.arc(this.x + Config.carWidth + 10, this.y + Config.carHeight + 5, 20, 0, 2 * Math.PI);
-                ctx.fillStyle = `rgb (0, 0, 0)`;
+                ctx.fillStyle = `rgb(0, 0, 0)`;
                 ctx.fill();
             }
 
@@ -65,7 +68,56 @@
             }
         }
 
-        const player = new Car(100, canvas.height - Config.carHeight);
-        player.draw();
+        class Strip {
+            constructor(x, fillStyle) {
+                this.fillStyle = fillStyle;
+                this.x = x;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.rect(this.x, canvas.height - Config.routeHeight, Config.routeStripWidth, Config.routeHeight);
+                if(this.fillStyle == 1) {
+                    ctx.fillStyle = `rgb(255, 255, 255)`;
+                } else {
+                    ctx.fillStyle = `rgb(255, 0, 0)`;
+                }
+                ctx.fill();
+            }
+        }
+
+        class Route {
+            constructor() {
+                this.strips = [];
+                const lim = canvas.width / Config.routeStripWidth;
+                for(var i = 0; i < lim; i++) {
+                    var fillstyle = 0;
+                    if(i % 2 == 0) {
+                        fillstyle = 1;
+                    } 
+                    this.strips.push(new Strip(
+                        0 + i * Config.routeStripWidth, fillstyle 
+                    ));
+                }
+            }
+
+            generateStrip(x, fillstyle) {
+                this.whiteStrips.unshift(new Strip(x, fillstyle));
+            }
+
+
+            draw() {
+                this.strips.forEach(strip => strip.draw())
+            }
+        }
+
+        const player = new Car(100, canvas.height - Config.routeHeight);
+        const route = new Route();
+
+        function animate() {
+            route.draw();
+            player.draw();
+        }
+        window.requestAnimationFrame(animate);
     </script>
 </body>
