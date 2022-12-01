@@ -3,6 +3,69 @@
     <canvas id="cns" width="800px" height="600px"></canvas>
     <script>
         const canvas = document.getElementById("cns");
-        const context = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d");
+
+        class Config {
+            constructor() {
+                if (new.target === Config) {
+                    throw new TypeError("Cannot construct Abstract instances directly.");
+                }
+            }
+
+            static carWidth = 75;
+            static carHeight = 50;
+            static carFrontHeight = 25;
+            static carFrontWidth = 30;
+            static carJumpImpulse = 10;
+            static carGravitySpeed = 2;
+            static carStyle = `rgb(128, 74, 128)`;
+            static routeFirstStripStyle = `rgb(255, 255, 255)`;
+            static routeSecondStripStyle = `rgb(255, 0, 0)`;
+
+        }
+
+        class Car {
+            constructor(initial_x, initial_y) {
+                this.x = initial_x - Config.carWidth / 2;
+                this.y = initial_y - Config.carHeight;
+                this.speed = 10;
+                this.jump_impulse = Config.carJumpSpeed;
+                this.gravity = Config.carGravitySpeed;
+            }
+
+            drawCar() {
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, Config.carWidth, Config.carHeight);
+                ctx.rect(this.x + Config.carWidth, this.y + Config.carFrontHeight, Config.carFrontWidth, Config.carFrontHeight);
+                ctx.closePath();
+                ctx.fillStyle = Config.carStyle;
+                ctx.fill();
+            }
+
+            drawFrontWindow() {
+                ctx.beginPath();
+                ctx.rect(this.x + Config.carWidth - 10, this.y, 10, Config.carHeight / 2);
+                ctx.closePath();
+                ctx.fillStyle = `rgb (0, 74, 255)`;
+                //ctx.fill();
+            }
+
+            drawWheels() {
+                ctx.beginPath();
+                ctx.arc(this.x + 10, this.y + Config.carHeight + 5, 20, 0, 2 * Math.PI);
+                ctx.arc(this.x + Config.carWidth + 10, this.y + Config.carHeight + 5, 20, 0, 2 * Math.PI);
+                ctx.fillStyle = `rgb (0, 0, 0)`;
+                ctx.fill();
+            }
+
+            draw() {
+                this.drawCar();
+                this.drawFrontWindow();
+                this.drawWheels();
+            }
+        }
+
+        const player = new Car(100, canvas.height - Config.carHeight);
+        player.draw();
     </script>
 </body>
