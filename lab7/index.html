@@ -102,7 +102,7 @@
             }
 
             generateStrip(x, fillstyle) {
-                this.whiteStrips.unshift(new Strip(x, fillstyle));
+                this.strips.push(new Strip(x, fillstyle));
             }
 
 
@@ -115,9 +115,32 @@
         const route = new Route();
 
         function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             route.draw();
             player.draw();
+            
+            const leftStrip = route.strips[0];
+            const rightStrip = route.strips[route.strips.length - 1];
+            if(rightStrip.x + Config.routeStripWidth < Config.routeWidth) {
+                var fillstyle = 0;
+                if (rightStrip.fillStyle == 0)
+                    fillstyle = 1;
+                route.generateStrip(canvas.width, fillstyle);
+            }
+
+            if(leftStrip.x + Config.routeStripWidth < 0) {
+                console.log(route.strips.length);
+                route.strips.splice(0, 1);
+            }
+
+            for (var i = route.strips.length; i--;) {
+                const strip = route.strips[i];
+                strip.x -= 5;
+            }
+            
+            window.requestAnimationFrame(animate);
         }
         window.requestAnimationFrame(animate);
+        
     </script>
 </body>
