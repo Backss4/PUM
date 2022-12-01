@@ -129,7 +129,6 @@
             }
 
             if(leftStrip.x + Config.routeStripWidth < 0) {
-                console.log(route.strips.length);
                 route.strips.splice(0, 1);
             }
 
@@ -137,7 +136,7 @@
                 const strip = route.strips[i];
                 strip.x -= 5;
             }
-            
+
             window.requestAnimationFrame(animate);
         }
         window.requestAnimationFrame(animate);
