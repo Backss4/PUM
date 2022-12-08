@@ -6,74 +6,101 @@
         const ctx = canvas.getContext("2d");
 
         class Kamien {
-            constructor(x, y) {
+            constructor(x, y, player) {
                 this.x = x;
                 this.y = y;
+                this.player = -1;
+                this.sasiedzi = [];
             }
 
-            rysuj(x, y) {
-                
-            }
+            sprawdzCzyMoznaZbic() {
+                for (var i = this.kamienie.length; i--;) {
+                    const kamien = this.kamienie[i];
 
-            czy_otoczony() {
-
-            }
-        }
-
-        class Gracz {
-            constructor(kolor) {
-                this.kolor = kolor;
-                this.kamienie = [];
-                this.dostepne = 10;
+                }
             }
 
             rysuj() {
-                kamienie.array.forEach(kamien => kamien.rysuj());
+                if(this.player == 0) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI);
+                    ctx.fillStyle = `rgb(0, 0, 0)`;
+                    ctx.fill();
+                } else if (this.player == 1) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI);
+                    ctx.fillStyle = `rgb(255, 255, 255)`;
+                    ctx.stroke();
+                    ctx.fill();
+                    ctx.closePath();
+                }
             }
         }
 
         class Mapa {
             constructor() {
-                this.gracz1 = new Gracz(0);
-                this.gracz2 = new Gracz(1);
+                this.do_postawienia = 20;
                 this.aktualny_gracz = 0;
                 this.koniec = false;
-                this.przeciecia = [];
+                this.kamienie = [];
                 this.lines = 9;
                 this.spacing = 50;
                 this.left_margin = (canvas.width - this.lines * this.spacing) / 2;
                 this.up_margin = (canvas.height - this.lines * this.spacing) / 2;
                 for(var i = 0; i < this.lines; i++) {
                     for(var j = 0; j < this.lines; j++) {
-                        this.przeciecia.push({x: this.left_margin + i * 50, y: this.up_margin + j * 50});
+                        this.kamienie.push(new Kamien(this.left_margin + i * 50, this.up_margin + j * 50, -1))
                     }
+                }
+                // for(var i = 0; i < this.lines; i++) {
+                //     for(var j = 0; j < this.lines; j++) {
+                //         if()
+                //     }
+                // }
+            }
+
+            sprawdzCzyMoznaZbic() {
+                for (var i = this.kamienie.length; i--;) {
+                    const kamien = this.kamienie[i];
+
                 }
             }
 
             ruch(event) {
-                const rect = canvas.getBoundingClientRect()
-                const x = event.clientX - rect.left
-                const y = event.clientY - rect.top
-                console.log(x, y);
-                for (var i = this.przeciecia.length; i--;) {
-                    const przeciecie = this.przeciecia[i];
-                    if(x >= przeciecie.x - 10 && x <= przeciecie.x + 10 && y >= przeciecie.y - 10 && y <= przeciecie.y + 10) {
-                        console.log("na przecieciu");
-                        console.log(przeciecie);
+                if(!this.koniec) {
+                    const rect = canvas.getBoundingClientRect()
+                    const x = event.clientX - rect.left
+                    const y = event.clientY - rect.top
+                    console.log(x, y);
+                    for (var i = this.kamienie.length; i--;) {
+                        const kamien = this.kamienie[i];
+                        if(x >= kamien.x - 10 && x <= kamien.x + 10 && y >= kamien.y - 10 && y <= kamien.y + 10 && kamien.player == -1) {
+                            kamien.player = this.aktualny_gracz;
+                            this.do_postawienia -= 1;
+                            if(this.aktualny_gracz == 0) {
+                                this.aktualny_gracz = 1;
+                            } else {
+                                this.aktualny_gracz = 0;
+                            }
+                            console.log(kamien);
+                        }
+                    }
+                    if(this.do_postawienia == 0) {
+                        this.koniec = true;
                     }
                 }
             }
 
             rysuj() {
-                
                 for(var i = 0; i < this.lines; i++) {
                     ctx.moveTo(this.left_margin + i * 50, this.up_margin);
                     ctx.lineTo(this.left_margin + i * 50, canvas.height - this.up_margin - this.spacing);
-                    ctx.stroke(); 
+                    ctx.stroke();
                     ctx.moveTo(this.left_margin, this.up_margin + i * 50);
                     ctx.lineTo(canvas.width - this.left_margin - this.spacing, this.up_margin + i * 50);
                     ctx.stroke();
                 }
+                this.kamienie.forEach(kamien => kamien.rysuj());
             }
 
         }
@@ -83,7 +110,12 @@
         canvas.addEventListener('mousedown', (e) => {
             mapa.ruch(e);
         })
-        mapa.rysuj();
+
+        function animate() {
+            mapa.rysuj();
+            window.requestAnimationFrame(animate);
+        }
+        window.requestAnimationFrame(animate);
     </script>
 </body>
 
