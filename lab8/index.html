@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<body>
+    <canvas id="cns" width="800px" height="600px"></canvas>
+    <script>
+        const canvas = document.getElementById("cns");
+        const ctx = canvas.getContext("2d");
+
+        class Kamien {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+
+            rysuj(x, y) {
+                
+            }
+
+            czy_otoczony() {
+
+            }
+        }
+
+        class Gracz {
+            constructor(kolor) {
+                this.kolor = kolor;
+                this.kamienie = [];
+                this.dostepne = 10;
+            }
+
+            rysuj() {
+                kamienie.array.forEach(kamien => kamien.rysuj());
+            }
+        }
+
+        class Mapa {
+            constructor() {
+                this.gracz1 = new Gracz(0);
+                this.gracz2 = new Gracz(1);
+                this.aktualny_gracz = 0;
+                this.koniec = false;
+                this.przeciecia = [];
+                this.lines = 9;
+                this.spacing = 50;
+                this.left_margin = (canvas.width - this.lines * this.spacing) / 2;
+                this.up_margin = (canvas.height - this.lines * this.spacing) / 2;
+                for(var i = 0; i < this.lines; i++) {
+                    for(var j = 0; j < this.lines; j++) {
+                        this.przeciecia.push({x: this.left_margin + i * 50, y: this.up_margin + j * 50});
+                    }
+                }
+            }
+
+            ruch(event) {
+                const rect = canvas.getBoundingClientRect()
+                const x = event.clientX - rect.left
+                const y = event.clientY - rect.top
+                console.log(x, y);
+                for (var i = this.przeciecia.length; i--;) {
+                    const przeciecie = this.przeciecia[i];
+                    if(x >= przeciecie.x - 10 && x <= przeciecie.x + 10 && y >= przeciecie.y - 10 && y <= przeciecie.y + 10) {
+                        console.log("na przecieciu");
+                        console.log(przeciecie);
+                    }
+                }
+            }
+
+            rysuj() {
+                
+                for(var i = 0; i < this.lines; i++) {
+                    ctx.moveTo(this.left_margin + i * 50, this.up_margin);
+                    ctx.lineTo(this.left_margin + i * 50, canvas.height - this.up_margin - this.spacing);
+                    ctx.stroke(); 
+                    ctx.moveTo(this.left_margin, this.up_margin + i * 50);
+                    ctx.lineTo(canvas.width - this.left_margin - this.spacing, this.up_margin + i * 50);
+                    ctx.stroke();
+                }
+            }
+
+        }
+
+        
+        mapa = new Mapa();
+        canvas.addEventListener('mousedown', (e) => {
+            mapa.ruch(e);
+        })
+        mapa.rysuj();
+    </script>
+</body>
+
+kamienie na przecięciach
+można zbijać kamienie
