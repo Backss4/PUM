@@ -14,10 +14,17 @@
             }
 
             sprawdzCzyMoznaZbic() {
-                for (var i = this.kamienie.length; i--;) {
-                    const kamien = this.kamienie[i];
-
+                if(this.player == -1)
+                    return false;
+                var enemy = this.player == 0 ? 1 : 0;
+                var k = 0;
+                for (var i = this.sasiedzi.length; i--;) {
+                    const kamien = this.sasiedzi[i];
+                    if(kamien.player == enemy)
+                        k++;
                 }
+
+                return k == this.sasiedzi.length ? true : false;
             }
 
             rysuj() {
@@ -42,6 +49,7 @@
                 this.do_postawienia = 20;
                 this.aktualny_gracz = 0;
                 this.koniec = false;
+                this.bicie = false;
                 this.kamienie = [];
                 this.lines = 9;
                 this.spacing = 50;
@@ -52,18 +60,38 @@
                         this.kamienie.push(new Kamien(this.left_margin + i * 50, this.up_margin + j * 50, -1))
                     }
                 }
-                // for(var i = 0; i < this.lines; i++) {
-                //     for(var j = 0; j < this.lines; j++) {
-                //         if()
-                //     }
-                // }
+                for(var i = 0; i < this.lines; i++) {
+                    for(var j = 0; j < this.lines; j++) {
+                        const index = i * this.lines + j;
+                        const kamien = this.kamienie[index];
+                        if(i == 0) {
+                            kamien.sasiedzi.push(this.kamienie[i * this.lines + 1]);
+                        } else if (i == this.lines - 1) {
+                            kamien.sasiedzi.push(this.kamienie[i * this.lines - 1]);
+                        } else {
+                            kamien.sasiedzi.push(this.kamienie[i * this.lines + 1]);
+                            kamien.sasiedzi.push(this.kamienie[i * this.lines - 1]);
+                        }
+
+                        if(j == 0) {
+                            kamien.sasiedzi.push(this.kamienie[i * this.lines + j + 1]);
+                        } else if(j == this.lines - 1) {
+                            kamien.sasiedzi.push(this.kamienie[i * this.lines + j - 1]);
+                        } else {
+                            kamien.sasiedzi.push(this.kamienie[i * this.lines + j + 1]);
+                            kamien.sasiedzi.push(this.kamienie[i * this.lines + j - 1]);
+                        }
+                    }
+                }
             }
 
             sprawdzCzyMoznaZbic() {
                 for (var i = this.kamienie.length; i--;) {
                     const kamien = this.kamienie[i];
-
+                    if(kamien.sprawdzCzyMoznaZbic())
+                        return true;
                 }
+                return false;
             }
 
             ruch(event) {
@@ -71,7 +99,6 @@
                     const rect = canvas.getBoundingClientRect()
                     const x = event.clientX - rect.left
                     const y = event.clientY - rect.top
-                    console.log(x, y);
                     for (var i = this.kamienie.length; i--;) {
                         const kamien = this.kamienie[i];
                         if(x >= kamien.x - 10 && x <= kamien.x + 10 && y >= kamien.y - 10 && y <= kamien.y + 10 && kamien.player == -1) {
@@ -82,14 +109,41 @@
                             } else {
                                 this.aktualny_gracz = 0;
                             }
-                            console.log(kamien);
+                        }
+                            /* console.log(this.bicie);
+                            if(kamien.player == -1 && !this.bicie) {
+                                kamien.player = this.aktualny_gracz;
+                                this.do_postawienia -= 1;
+                                if(this.sprawdzCzyMoznaZbic()) {
+                                    this.bicie = true;
+                                } else {
+                                    if(this.aktualny_gracz == 0) {
+                                    this.aktualny_gracz = 1;
+                                    } else {
+                                        this.aktualny_gracz = 0;
+                                    }
+                                }
+                            } else {
+                                console.log(kamien.player, this.aktualny_gracz)
+                                if(kamien.player != this.aktualny_gracz && kamien.player != -1) {
+                                    kamien.player = -1;
+                                    this.bicie = false;
+                                    if(!this.sprawdzCzyMoznaZbic()) {
+                                        this.bicie = false;
+                                        if(this.aktualny_gracz == 0) {
+                                            this.aktualny_gracz = 1;
+                                        } else {
+                                            this.aktualny_gracz = 0;
+                                        }
+                                    }
+                                }
+                            }*/
+                        }
+                        if(this.do_postawienia == 0) {
+                            this.koniec = true;
                         }
                     }
-                    if(this.do_postawienia == 0) {
-                        this.koniec = true;
-                    }
                 }
-            }
 
             rysuj() {
                 for(var i = 0; i < this.lines; i++) {
