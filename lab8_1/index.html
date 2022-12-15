@@ -23,7 +23,6 @@
                     if(kamien.player == enemy)
                         k++;
                 }
-
                 return k == this.sasiedzi.length ? true : false;
             }
 
@@ -50,7 +49,6 @@
                 this.aktualny_gracz = 0;
                 this.koniec = false;
                 this.bicie = false;
-                this.kamien_do_zbicia = null;
                 this.kamienie = [];
                 this.lines = 9;
                 this.spacing = 50;
@@ -61,17 +59,32 @@
                         this.kamienie.push(new Kamien(this.left_margin + i * 50, this.up_margin + j * 50, -1))
                     }
                 }
+                this.#przygotujSasiadow();
+            }
+
+            #przygotujSasiadow() {
+                const upper_left = 0;
+                const upper_right = this.lines - 1;
+                const down_left = this.lines * (this.lines - 1);
+                const down_right = this.lines * this.lines - 1;
+
+                this.kamienie[upper_left].sasiedzi.push(this.kamienie[upper_left + this.lines + 1]);
+                this.kamienie[upper_right].sasiedzi.push(this.kamienie[upper_right + this.lines - 1]);
+                this.kamienie[down_left].sasiedzi.push(this.kamienie[down_left - this.lines + 1]);
+                this.kamienie[down_right].sasiedzi.push(this.kamienie[down_right - this.lines - 1]);
+
                 for(var i = 0; i < this.lines; i++) {
                     for(var j = 0; j < this.lines; j++) {
                         const index = i * this.lines + j;
                         const kamien = this.kamienie[index];
+
                         if(i == 0) {
-                            kamien.sasiedzi.push(this.kamienie[i * this.lines + 1]);
+                            kamien.sasiedzi.push(this.kamienie[(i + 1) * this.lines + j]);
                         } else if (i == this.lines - 1) {
-                            kamien.sasiedzi.push(this.kamienie[i * this.lines - 1]);
+                            kamien.sasiedzi.push(this.kamienie[(i - 1) * this.lines + j]);
                         } else {
-                            kamien.sasiedzi.push(this.kamienie[i * this.lines + 1]);
-                            kamien.sasiedzi.push(this.kamienie[i * this.lines - 1]);
+                            kamien.sasiedzi.push(this.kamienie[(i + 1) * this.lines + j]);
+                            kamien.sasiedzi.push(this.kamienie[(i - 1) * this.lines + j]);
                         }
 
                         if(j == 0) {
@@ -90,9 +103,9 @@
                 for (var i = this.kamienie.length; i--;) {
                     const kamien = this.kamienie[i];
                     if(kamien.player == gracz && kamien.sprawdzCzyMoznaZbic())
-                        return [true, kamien];
+                        return true;
                 }
-                return [false, null];
+                return false;
             }
 
             policzKamienieGraczy() {
@@ -117,30 +130,36 @@
                     if(this.bicie == false) {
                         for (var i = this.kamienie.length; i--;) {
                             const kamien = this.kamienie[i];
-                            if(x >= kamien.x - 10 && x <= kamien.x + 10 && y >= kamien.y - 10 && y <= kamien.y + 10) {
-                                if(this.bicie == false) {
-                                    if(kamien.player == -1) {
-                                        kamien.player = this.aktualny_gracz;
-                                        this.do_postawienia[this.aktualny_gracz] -= 1;
-                                        const ret = this.sprawdzCzyMoznaZbic(this.aktualny_gracz == 1 ? 0 : 1);
-                                        console.log(ret);
-                                        if(ret[0] == true) {
-                                            this.bicie = true;
-                                            this.kamien_do_zbicia = ret[1];
-                                            break;
-                                        }
-                                        if(this.aktualny_gracz == 0) {
-                                            this.aktualny_gracz = 1;
-                                        } else {
-                                            this.aktualny_gracz = 0;
-                                        }
-                                        break;
-                                    }
+                            if(kamien.player == -1 && x >= kamien.x - 10 && x <= kamien.x + 10 && y >= kamien.y - 10 && y <= kamien.y + 10) {
+                                kamien.player = this.aktualny_gracz;
+                                this.do_postawienia[this.aktualny_gracz] -= 1;
+                                this.bicie = this.sprawdzCzyMoznaZbic(this.aktualny_gracz == 1 ? 0 : 1);
+                                console.log(this.bicie);
+                                if(this.bicie)
+                                    break; //przerwij i poczekaj na bicie tego samego gracza
+                                if(this.aktualny_gracz == 0) {
+                                    this.aktualny_gracz = 1;
+                                } else {
+                                    this.aktualny_gracz = 0;
                                 }
+                                break;
                             }
                         }
                     } else {
-                        
+                        const przeciwnik = this.aktualny_gracz == 1 ? 0 : 1;
+                        for (var i = this.kamienie.length; i--;) {
+                            const kamien = this.kamienie[i];
+                            if(kamien.player == przeciwnik && x >= kamien.x - 10 && x <= kamien.x + 10 && y >= kamien.y - 10 && y <= kamien.y + 10 && kamien.sprawdzCzyMoznaZbic()) {
+                                kamien.player = -1;
+                                this.bicie = false;
+                                if(this.aktualny_gracz == 0) {
+                                    this.aktualny_gracz = 1;
+                                } else {
+                                    this.aktualny_gracz = 0;
+                                }
+                                break;
+                            }
+                        }
                     }
                     if(this.do_postawienia[0] == 0 && this.do_postawienia[1] == 0 && this.bicie == false) {
                         this.koniec = true;
