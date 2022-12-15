@@ -109,7 +109,7 @@
             }
 
             policzKamienieGraczy() {
-                ret = [0, 0];
+                var ret = [0, 0];
                 for (var i = this.kamienie.length; i--;) {
                     const kamien = this.kamienie[i];
                     if(kamien.player == 0)
@@ -134,7 +134,6 @@
                                 kamien.player = this.aktualny_gracz;
                                 this.do_postawienia[this.aktualny_gracz] -= 1;
                                 this.bicie = this.sprawdzCzyMoznaZbic(this.aktualny_gracz == 1 ? 0 : 1);
-                                console.log(this.bicie);
                                 if(this.bicie)
                                     break; //przerwij i poczekaj na bicie tego samego gracza
                                 if(this.aktualny_gracz == 0) {
@@ -146,15 +145,11 @@
                             }
                         }
                     } else {
-                        console.log(x, y);
                         const przeciwnik = this.aktualny_gracz == 1 ? 0 : 1;
                         for (var i = this.kamienie.length; i--;) {
                             const kamien = this.kamienie[i];
                             if(kamien.player == przeciwnik && x >= kamien.x - 10 && x <= kamien.x + 10 && y >= kamien.y - 10 && y <= kamien.y + 10 && kamien.sprawdzCzyMoznaZbic()) {
-                                console.log("lololo");
-                                console.log(przeciwnik);
                                 kamien.player = -1;
-                                console.log(kamien);
                                 this.bicie = false;
                                 if(this.aktualny_gracz == 0) {
                                     this.aktualny_gracz = 1;
@@ -172,6 +167,7 @@
             }
 
             rysuj() {
+                console.log("xdd");
                 for(var i = 0; i < this.lines; i++) {
                     ctx.moveTo(this.left_margin + i * 50, this.up_margin);
                     ctx.lineTo(this.left_margin + i * 50, canvas.height - this.up_margin - this.spacing);
@@ -181,6 +177,15 @@
                     ctx.stroke();
                 }
                 this.kamienie.forEach(kamien => kamien.rysuj());
+                if(this.koniec) {
+                    const kamienie = this.policzKamienieGraczy(0);
+                    ctx.font = "30px Arial";
+                    if(kamienie[0] > kamienie[1]) {
+                        ctx.fillText("Czarny wygrał", 0, 575); 
+                    } else {
+                        ctx.fillText("Biały wygrał", 0, 575); 
+                    }
+                }
             }
 
         }
