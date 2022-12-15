@@ -146,11 +146,15 @@
                             }
                         }
                     } else {
+                        console.log(x, y);
                         const przeciwnik = this.aktualny_gracz == 1 ? 0 : 1;
                         for (var i = this.kamienie.length; i--;) {
                             const kamien = this.kamienie[i];
                             if(kamien.player == przeciwnik && x >= kamien.x - 10 && x <= kamien.x + 10 && y >= kamien.y - 10 && y <= kamien.y + 10 && kamien.sprawdzCzyMoznaZbic()) {
+                                console.log("lololo");
+                                console.log(przeciwnik);
                                 kamien.player = -1;
+                                console.log(kamien);
                                 this.bicie = false;
                                 if(this.aktualny_gracz == 0) {
                                     this.aktualny_gracz = 1;
@@ -188,6 +192,7 @@
         })
 
         function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             mapa.rysuj();
             window.requestAnimationFrame(animate);
         }
