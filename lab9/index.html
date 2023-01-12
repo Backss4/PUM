@@ -19,6 +19,12 @@
                 this.ctx = ctx;
                 this.selected = false;
                 this.player = -1;
+                this.super_pawn = false;
+            }
+
+            takeout() {
+                this.player = -1;
+                this.super_pawn = false;
             }
 
             display() {
@@ -38,6 +44,13 @@
                     this.ctx.beginPath();
                     this.ctx.arc(this.center_x, this.center_y, 20, 0, 2 * Math.PI);
                     this.ctx.fillStyle = `rgb(255, 255, 255)`;
+                    this.ctx.fill();
+                }
+
+                if(this.super_pawn) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.center_x, this.center_y, 5, 0, 2 * Math.PI);
+                    this.ctx.fillStyle = `rgb(0, 0, 0)`;
                     this.ctx.fill();
                 }
             }
@@ -139,10 +152,11 @@
                     for (var i = this.fields.length; i--;) {
                         const field = this.fields[i];
                         if(x >= field.center_x - 25 && x <= field.center_x + 25 && y >= field.center_y - 25 && y <= field.center_y + 25) {
-                            console.log(field);
-                            if(this.selected_field == null && field.player == this.current_player) {
-                                field.selected = true;
-                                this.selected_field = field;
+                            if(this.selected_field == null) {
+                                if(field.player == this.current_player) {
+                                    field.selected = true;
+                                    this.selected_field = field;
+                                }
                             } else {
                                 if(field == this.selected_field) {
                                     this.selected_field = null;
@@ -151,11 +165,30 @@
 
                                 if(this.current_player == 0) {
                                     if(field.player == -1) {
+                                        if(this.selected_field.super_pawn) {
+                                            if(field.row - this.selected_field.row == 1 && (field.col  == this.selected_field.col - 1 || field.col == this.selected_field.col + 1)) {
+                                                field.player = this.selected_field.player;
+                                                field.super_pawn = this.selected_field.super_pawn;
+                                                move = true;
+                                            } else if(field.row - this.selected_field.row == 2 && (field.col == this.selected_field.col - 2 || field.col == this.selected_field.col + 2)) {
+                                                var field_between = null;
+                                                if(field.col == this.selected_field.col + 2) {
+                                                    field_between = this.fields[(field.row - 1) * 8 + field.col - 1];
+                                                } else {
+                                                    field_between = this.fields[(field.row - 1) * 8 + field.col + 1];
+                                                }
+                                                console.log(field_between);
+                                                if(field_between.player != -1 && field_between != this.current_player) {
+                                                    field_between.takeout();
+                                                    field.player = this.selected_field.player;
+                                                    field.super_pawn = this.selected_field.super_pawn;
+                                                    move = true;
+                                                }
+                                            }
+                                        }
                                         if(this.selected_field.row - field.row == 1 && (field.col == this.selected_field.col - 1 || field.col == this.selected_field.col + 1)) {
-                                            this.selected_field.player = -1;
-                                            this.selected_field.selected = false;
-                                            this.selected_field = null;
-                                            field.player = this.current_player;
+                                            field.player = this.selected_field.player;
+                                            field.super_pawn = this.selected_field.super_pawn;
                                             move = true;
                                         } else if(this.selected_field.row - field.row == 2 && (field.col == this.selected_field.col - 2 || field.col == this.selected_field.col + 2)) {
                                             var field_between = null;
@@ -166,24 +199,44 @@
                                             }
                                             console.log(field_between);
                                             if(field_between.player != -1 && field_between != this.current_player) {
-                                                field_between.player = -1;
-                                                this.selected_field.player = -1;
-                                                this.selected_field.selected = false;
-                                                this.selected_field = null;
-                                                field.player = this.current_player;
+                                                field_between.takeout();
+                                                field.player = this.selected_field.player;
+                                                field.super_pawn = this.selected_field.super_pawn;
                                                 move = true;
                                             }
+                                        }
+                                        if(field.row == 0 && field.player == this.current_player && !field.super_pawn) {
+                                            field.super_pawn = true;
                                         }
                                     }
                                 }
 
                                 if(this.current_player == 1) {
                                     if(field.player == -1) {
+                                        if(this.selected_field.super_pawn) {
+                                            if(this.selected_field.row - field.row == 1 && (field.col == this.selected_field.col - 1 || field.col == this.selected_field.col + 1)) {
+                                                field.player = this.selected_field.player;
+                                                field.super_pawn = this.selected_field.super_pawn;
+                                                move = true;
+                                            } else if(this.selected_field.row - field.row == 2 && (field.col == this.selected_field.col - 2 || field.col == this.selected_field.col + 2)) {
+                                                var field_between = null;
+                                                if(field.col == this.selected_field.col + 2) {
+                                                    field_between = this.fields[(field.row + 1) * 8 + field.col - 1];
+                                                } else {
+                                                    field_between = this.fields[(field.row + 1) * 8 + field.col + 1];
+                                                }
+                                                console.log(field_between);
+                                                if(field_between.player != -1 && field_between != this.current_player) {
+                                                    field_between.takeout();
+                                                    field.player = this.selected_field.player;
+                                                    field.super_pawn = this.selected_field.super_pawn;
+                                                    move = true;
+                                                }
+                                            }
+                                        }
                                         if(field.row - this.selected_field.row == 1 && (field.col  == this.selected_field.col - 1 || field.col == this.selected_field.col + 1)) {
-                                            this.selected_field.player = -1;
-                                            this.selected_field.selected = false;
-                                            this.selected_field = null;
-                                            field.player = this.current_player;
+                                            field.player = this.selected_field.player;
+                                            field.super_pawn = this.selected_field.super_pawn;
                                             move = true;
                                         } else if(field.row - this.selected_field.row == 2 && (field.col == this.selected_field.col - 2 || field.col == this.selected_field.col + 2)) {
                                             var field_between = null;
@@ -194,18 +247,24 @@
                                             }
                                             console.log(field_between);
                                             if(field_between.player != -1 && field_between != this.current_player) {
-                                                field_between.player = -1;
-                                                this.selected_field.player = -1;
-                                                this.selected_field.selected = false;
-                                                this.selected_field = null;
-                                                field.player = this.current_player;
+                                                field_between.takeout();
+                                                field.player = this.selected_field.player;
+                                                field.super_pawn = this.selected_field.super_pawn;
                                                 move = true;
                                             }
+                                        }
+
+                                        if(field.row == 7 && field.player == this.current_player && !field.super_pawn) {
+                                            field.super_pawn = true;
                                         }
                                     }
                                 }
 
                                 if(move) {
+                                    this.selected_field.selected = false;
+                                    this.selected_field.super_pawn = false;
+                                    this.selected_field.player = -1;
+                                    this.selected_field = null;
                                     if(this.current_player == 0)
                                         this.current_player = 1;
                                     else
