@@ -4,5 +4,63 @@
     <script>
         const canvas = document.getElementById("cns");
         const ctx = canvas.getContext("2d");
+
+        class Pawn {
+
+        }
+
+        class Field {
+            constructor(ctx, x, y, size, color) {
+                this.size = size;
+                this.player = null;
+                this.color = color;
+                this.x = x;
+                this.y = y;
+                this.ctx = ctx;
+            }
+
+            display() {
+                this.ctx.beginPath();
+                this.ctx.rect(this.x, this.y, this.size, this.size);
+                this.ctx.fillStyle = this.color;
+                this.ctx.fill();
+            }
+        }
+
+        class Board {
+            constructor(ctx) {
+                this.ctx = ctx;
+                this.fields = [];
+                this.#generateFields();
+            }
+
+            #generateFields() {
+                for(var i = 0; i < 8; i++) {
+                    for(var j = 0; j < 8; j++) {
+                        if(i % 2 == 0) {
+                            if(j % 2 == 0) {
+                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(211, 199, 162)`));
+                            } else {
+                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(0, 100, 0)`));
+                            }
+                        } else {
+                            if(j % 2 == 0) {
+                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(0, 100, 0)`));
+                            } else {
+                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(211, 199, 162)`));
+                            }
+                        }
+                    }
+                }
+            }
+
+            display() {
+                this.fields.forEach(field => field.display());
+            }
+        }
+
+        const board = new Board(ctx);
+        board.display();
+
     </script>
 </body>
