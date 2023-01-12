@@ -5,18 +5,20 @@
         const canvas = document.getElementById("cns");
         const ctx = canvas.getContext("2d");
 
-        class Pawn {
-
-        }
-
         class Field {
-            constructor(ctx, x, y, size, color) {
+            constructor(ctx, x, y, size, color, row, col) {
                 this.size = size;
                 this.player = null;
                 this.color = color;
                 this.x = x;
                 this.y = y;
+                this.center_x = x + size / 2;
+                this.center_y = y + size / 2;
+                this.row = row;
+                this.col = col;
                 this.ctx = ctx;
+                this.selected = false;
+                this.player = -1;
             }
 
             display() {
@@ -24,14 +26,34 @@
                 this.ctx.rect(this.x, this.y, this.size, this.size);
                 this.ctx.fillStyle = this.color;
                 this.ctx.fill();
+                if(this.selected)
+                    this.ctx.stroke();
+                
+                if(this.player == 1) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.center_x, this.center_y, 20, 0, 2 * Math.PI);
+                    this.ctx.fillStyle = `rgb(255, 0, 0)`;
+                    this.ctx.fill();
+                } else if(this.player == 0) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.center_x, this.center_y, 20, 0, 2 * Math.PI);
+                    this.ctx.fillStyle = `rgb(255, 255, 255)`;
+                    this.ctx.fill();
+                }
             }
         }
 
         class Board {
             constructor(ctx) {
+                this.current_player = 0;
+                this.selected_field = null;
+                this.end = false;
+                this.pawns = [];
+                this.player_won = -1;
                 this.ctx = ctx;
                 this.fields = [];
                 this.#generateFields();
+                this.#initializeFields();
             }
 
             #generateFields() {
@@ -39,28 +61,181 @@
                     for(var j = 0; j < 8; j++) {
                         if(i % 2 == 0) {
                             if(j % 2 == 0) {
-                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(211, 199, 162)`));
+                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(211, 199, 162)`, i, j));
                             } else {
-                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(0, 100, 0)`));
+                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(0, 100, 0)`, i, j));
                             }
                         } else {
                             if(j % 2 == 0) {
-                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(0, 100, 0)`));
+                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(0, 100, 0)`, i, j));
                             } else {
-                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(211, 199, 162)`));
+                                this.fields.push(new Field(this.ctx, 0 + 50 * j, 0 + 50 * i, 50, `rgb(211, 199, 162)`, i, j));
                             }
                         }
                     }
                 }
             }
 
+            #initializeFields() {
+                for(var i = 0; i < 3; i++) {
+                    for(var j = 0; j < 8; j++) {
+                        if(i == 1) {
+                            if(j % 2 == 0)
+                                this.fields[i * 8 + j].player = 1;
+                        } else {
+                            if(j % 2 == 1)
+                                this.fields[i * 8 + j].player = 1;
+                        }
+                    }
+                }
+
+                for(var i = 5; i < 8; i++) {
+                    for(var j = 0; j < 8; j++) {
+                        if(i == 6) {
+                            if(j % 2 == 1)
+                                this.fields[i * 8 + j].player = 0;
+                        } else {
+                            if(j % 2 == 0)
+                                this.fields[i * 8 + j].player = 0;
+                        }
+                    }
+                }
+            }
+
+            #countPlayersPawn() {
+                var ret = [0, 0]
+                for (var i = this.fields.length; i--;) {
+                    const field = this.fields[i];
+                    if(field.player == 0)
+                        ret[0] += 1;
+                    else if(field.player == 1) 
+                        ret[1] += 1;
+                }
+
+                return ret;
+            }
+
             display() {
+                this.ctx.clearRect(0, 0, 8 * 50, 8 * 50);
                 this.fields.forEach(field => field.display());
+                if(this.end) {
+                    this.ctx.font = "30px Arial";
+                    this.ctx.fillStyle = `rgb(0, 0, 0)`;
+                    this.ctx.textAlign = 'center';
+                    if(this.player_won == 0) {
+                        this.ctx.fillText("Gracz biały wygrał", 200, 200); 
+                    } else {
+                        this.ctx.fillText("Gracz czerwony wygrał", 200, 200); 
+                    }
+                }
+            }
+
+            move(event) {
+                if(!this.end) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = event.clientX - rect.left;
+                    const y = event.clientY - rect.top;
+                    var move = false;
+                    for (var i = this.fields.length; i--;) {
+                        const field = this.fields[i];
+                        if(x >= field.center_x - 25 && x <= field.center_x + 25 && y >= field.center_y - 25 && y <= field.center_y + 25) {
+                            console.log(field);
+                            if(this.selected_field == null && field.player == this.current_player) {
+                                field.selected = true;
+                                this.selected_field = field;
+                            } else {
+                                if(field == this.selected_field) {
+                                    this.selected_field = null;
+                                    field.selected = false;
+                                }
+
+                                if(this.current_player == 0) {
+                                    if(field.player == -1) {
+                                        if(this.selected_field.row - field.row == 1 && (field.col == this.selected_field.col - 1 || field.col == this.selected_field.col + 1)) {
+                                            this.selected_field.player = -1;
+                                            this.selected_field.selected = false;
+                                            this.selected_field = null;
+                                            field.player = this.current_player;
+                                            move = true;
+                                        } else if(this.selected_field.row - field.row == 2 && (field.col == this.selected_field.col - 2 || field.col == this.selected_field.col + 2)) {
+                                            var field_between = null;
+                                            if(field.col == this.selected_field.col + 2) {
+                                                field_between = this.fields[(field.row + 1) * 8 + field.col - 1];
+                                            } else {
+                                                field_between = this.fields[(field.row + 1) * 8 + field.col + 1];
+                                            }
+                                            console.log(field_between);
+                                            if(field_between.player != -1 && field_between != this.current_player) {
+                                                field_between.player = -1;
+                                                this.selected_field.player = -1;
+                                                this.selected_field.selected = false;
+                                                this.selected_field = null;
+                                                field.player = this.current_player;
+                                                move = true;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if(this.current_player == 1) {
+                                    if(field.player == -1) {
+                                        if(field.row - this.selected_field.row == 1 && (field.col  == this.selected_field.col - 1 || field.col == this.selected_field.col + 1)) {
+                                            this.selected_field.player = -1;
+                                            this.selected_field.selected = false;
+                                            this.selected_field = null;
+                                            field.player = this.current_player;
+                                            move = true;
+                                        } else if(field.row - this.selected_field.row == 2 && (field.col == this.selected_field.col - 2 || field.col == this.selected_field.col + 2)) {
+                                            var field_between = null;
+                                            if(field.col == this.selected_field.col + 2) {
+                                                field_between = this.fields[(field.row - 1) * 8 + field.col - 1];
+                                            } else {
+                                                field_between = this.fields[(field.row - 1) * 8 + field.col + 1];
+                                            }
+                                            console.log(field_between);
+                                            if(field_between.player != -1 && field_between != this.current_player) {
+                                                field_between.player = -1;
+                                                this.selected_field.player = -1;
+                                                this.selected_field.selected = false;
+                                                this.selected_field = null;
+                                                field.player = this.current_player;
+                                                move = true;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if(move) {
+                                    if(this.current_player == 0)
+                                        this.current_player = 1;
+                                    else
+                                        this.current_player = 0;
+                                }
+                            }
+                        }
+                    }
+                    const pawns = this.#countPlayersPawn();
+                    if(pawns[0] == 1) {
+                        this.player_won = 1;
+                        this.end = true;
+                    } else if(pawns[1] == 1) {
+                        this.player_won = 1;
+                        this.end = true;
+                    }
+                }
             }
         }
 
         const board = new Board(ctx);
-        board.display();
 
+        canvas.addEventListener('mousedown', (e) => {
+            board.move(e);
+        })
+
+        function animate() {
+            board.display();
+            window.requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
